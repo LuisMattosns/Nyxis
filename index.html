@@ -1167,128 +1167,158 @@
   </footer>
 
   <script>
-    const canvas = document.getElementById('funnelChart');
-    const ctx = canvas.getContext('2d');
+  const canvas = document.getElementById('funnelChart');
+  const ctx = canvas.getContext('2d');
 
-    function roundRect(context, x, y, w, h, r) {
-      context.beginPath();
-      context.moveTo(x + r, y);
-      context.lineTo(x + w - r, y);
-      context.quadraticCurveTo(x + w, y, x + w, y + r);
-      context.lineTo(x + w, y + h - r);
-      context.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-      context.lineTo(x + r, y + h);
-      context.quadraticCurveTo(x, y + h, x, y + h - r);
-      context.lineTo(x, y + r);
-      context.quadraticCurveTo(x, y, x + r, y);
-      context.closePath();
-    }
+  function roundRect(context, x, y, w, h, r) {
+    context.beginPath();
+    context.moveTo(x + r, y);
+    context.lineTo(x + w - r, y);
+    context.quadraticCurveTo(x + w, y, x + w, y + r);
+    context.lineTo(x + w, y + h - r);
+    context.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    context.lineTo(x + r, y + h);
+    context.quadraticCurveTo(x, y + h, x, y + h - r);
+    context.lineTo(x, y + r);
+    context.quadraticCurveTo(x, y, x + r, y);
+    context.closePath();
+  }
 
-    function drawChart() {
-      const dpr = window.devicePixelRatio || 1;
-      const cssWidth = canvas.clientWidth || 760;
-      const cssHeight = 320;
-      canvas.width = cssWidth * dpr;
-      canvas.height = cssHeight * dpr;
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.scale(dpr, dpr);
+  function drawChart() {
+    const dpr = window.devicePixelRatio || 1;
+    const cssWidth = canvas.clientWidth || 760;
+    const isMobile = window.innerWidth <= 720;
+    const cssHeight = isMobile ? 280 : 320;
 
-      const width = cssWidth;
-      const height = cssHeight;
-      ctx.clearRect(0, 0, width, height);
+    canvas.width = cssWidth * dpr;
+    canvas.height = cssHeight * dpr;
+    canvas.style.height = cssHeight + 'px';
 
-      const gradientBg = ctx.createLinearGradient(0, 0, width, height);
-      gradientBg.addColorStop(0, 'rgba(20, 13, 38, 0.95)');
-      gradientBg.addColorStop(1, 'rgba(10, 8, 19, 0.92)');
-      roundRect(ctx, 0, 0, width, height, 24);
-      ctx.fillStyle = gradientBg;
-      ctx.fill();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.scale(dpr, dpr);
 
-      const rings = [
-        { label: 'Topo do funil', subtitle: 'Atração e alcance', radius: 112, color: '#9e5fff' },
-        { label: 'Meio do funil', subtitle: 'Interesse e consideração', radius: 82, color: '#c55eff' },
-        { label: 'Conversão', subtitle: 'Contato e decisão', radius: 38, color: '#69e7ff' }
-      ];
+    const width = cssWidth;
+    const height = cssHeight;
+    ctx.clearRect(0, 0, width, height);
 
-      const centerX = width * 0.42;
-      const centerY = height * 0.52;
+    const gradientBg = ctx.createLinearGradient(0, 0, width, height);
+    gradientBg.addColorStop(0, 'rgba(20, 13, 38, 0.95)');
+    gradientBg.addColorStop(1, 'rgba(10, 8, 19, 0.92)');
+    roundRect(ctx, 0, 0, width, height, 24);
+    ctx.fillStyle = gradientBg;
+    ctx.fill();
 
-      rings.forEach((ring, index) => {
-        ctx.save();
-        ctx.translate(centerX, centerY);
-        ctx.rotate(-0.35);
-        ctx.beginPath();
-        ctx.ellipse(0, 0, ring.radius + 80, ring.radius * 0.42, 0, 0, Math.PI * 2);
-        ctx.strokeStyle = ring.color;
-        ctx.lineWidth = index === 2 ? 10 : 14;
-        ctx.shadowColor = ring.color;
-        ctx.shadowBlur = 18;
-        ctx.globalAlpha = index === 2 ? 0.95 : 0.75;
-        ctx.stroke();
-        ctx.restore();
-      });
+    const rings = [
+      { label: 'Topo do funil', subtitle: 'Atração e alcance', radius: isMobile ? 92 : 112, color: '#9e5fff' },
+      { label: 'Meio do funil', subtitle: 'Interesse e consideração', radius: isMobile ? 66 : 82, color: '#c55eff' },
+      { label: 'Conversão', subtitle: 'Contato e decisão', radius: isMobile ? 34 : 38, color: '#69e7ff' }
+    ];
 
-      const coreGradient = ctx.createRadialGradient(centerX, centerY, 10, centerX, centerY, 68);
-      coreGradient.addColorStop(0, '#ffffff');
-      coreGradient.addColorStop(0.18, '#cfefff');
-      coreGradient.addColorStop(0.45, '#69e7ff');
-      coreGradient.addColorStop(1, 'rgba(105, 231, 255, 0.08)');
+    const centerX = isMobile ? width * 0.34 : width * 0.42;
+    const centerY = height * 0.52;
+
+    rings.forEach((ring, index) => {
+      ctx.save();
+      ctx.translate(centerX, centerY);
+      ctx.rotate(-0.35);
       ctx.beginPath();
-      ctx.arc(centerX, centerY, 40, 0, Math.PI * 2);
-      ctx.fillStyle = coreGradient;
-      ctx.shadowColor = '#69e7ff';
-      ctx.shadowBlur = 22;
+      ctx.ellipse(
+        0,
+        0,
+        ring.radius + (isMobile ? 62 : 80),
+        ring.radius * 0.42,
+        0,
+        0,
+        Math.PI * 2
+      );
+      ctx.strokeStyle = ring.color;
+      ctx.lineWidth = index === 2 ? (isMobile ? 8 : 10) : (isMobile ? 11 : 14);
+      ctx.shadowColor = ring.color;
+      ctx.shadowBlur = 18;
+      ctx.globalAlpha = index === 2 ? 0.95 : 0.75;
+      ctx.stroke();
+      ctx.restore();
+    });
+
+    const coreGradient = ctx.createRadialGradient(centerX, centerY, 10, centerX, centerY, isMobile ? 56 : 68);
+    coreGradient.addColorStop(0, '#ffffff');
+    coreGradient.addColorStop(0.18, '#cfefff');
+    coreGradient.addColorStop(0.45, '#69e7ff');
+    coreGradient.addColorStop(1, 'rgba(105, 231, 255, 0.08)');
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, isMobile ? 34 : 40, 0, Math.PI * 2);
+    ctx.fillStyle = coreGradient;
+    ctx.shadowColor = '#69e7ff';
+    ctx.shadowBlur = 22;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = isMobile ? '700 11px Inter' : '700 14px Inter';
+    ctx.fillText('Conversão', centerX - (isMobile ? 26 : 34), centerY + 4);
+
+    const textX = isMobile ? width * 0.68 : width * 0.66;
+    const textStartY = isMobile ? 74 : 86;
+    const textGap = isMobile ? 64 : 76;
+
+    rings.forEach((ring, index) => {
+      const y = textStartY + index * textGap;
+
+      ctx.beginPath();
+      ctx.fillStyle = ring.color;
+      ctx.arc(textX, y, isMobile ? 5 : 7, 0, Math.PI * 2);
       ctx.fill();
-      ctx.shadowBlur = 0;
 
       ctx.fillStyle = '#ffffff';
-      ctx.font = '700 14px Inter';
-      ctx.fillText('Conversão', centerX - 34, centerY + 5);
+      ctx.font = isMobile ? '700 11px Inter' : '700 15px Inter';
+      ctx.fillText(ring.label, textX + (isMobile ? 14 : 18), y + 4);
 
-      const textX = width * 0.66;
-      const textStartY = 86;
-      rings.forEach((ring, index) => {
-        const y = textStartY + index * 76;
-        ctx.beginPath();
-        ctx.fillStyle = ring.color;
-        ctx.arc(textX, y, 7, 0, Math.PI * 2);
-        ctx.fill();
+      ctx.fillStyle = 'rgba(235,229,255,0.78)';
+      ctx.font = isMobile ? '10px Inter' : '13px Inter';
+      ctx.fillText(ring.subtitle, textX + (isMobile ? 14 : 18), y + (isMobile ? 19 : 25));
+    });
 
-        ctx.fillStyle = '#ffffff';
-        ctx.font = '700 15px Inter';
-        ctx.fillText(ring.label, textX + 18, y + 5);
+    ctx.strokeStyle = 'rgba(255,255,255,0.12)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
 
-        ctx.fillStyle = 'rgba(235,229,255,0.78)';
-        ctx.font = '13px Inter';
-        ctx.fillText(ring.subtitle, textX + 18, y + 25);
-      });
+    if (isMobile) {
+      ctx.moveTo(centerX + 82, centerY - 46);
+      ctx.lineTo(textX - 14, textStartY + 2);
 
-      ctx.strokeStyle = 'rgba(255,255,255,0.12)';
-      ctx.lineWidth = 1;
-      ctx.beginPath();
+      ctx.moveTo(centerX + 72, centerY - 2);
+      ctx.lineTo(textX - 14, textStartY + 66);
+
+      ctx.moveTo(centerX + 42, centerY + 20);
+      ctx.lineTo(textX - 14, textStartY + 130);
+    } else {
       ctx.moveTo(centerX + 104, centerY - 54);
       ctx.lineTo(textX - 18, textStartY + 2);
+
       ctx.moveTo(centerX + 92, centerY - 4);
       ctx.lineTo(textX - 18, textStartY + 78);
+
       ctx.moveTo(centerX + 56, centerY + 22);
       ctx.lineTo(textX - 18, textStartY + 154);
-      ctx.stroke();
     }
 
-    drawChart();
-    window.addEventListener('resize', drawChart);
+    ctx.stroke();
+  }
 
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-        }
-      });
-    }, { threshold: 0.16 });
+  drawChart();
+  window.addEventListener('resize', drawChart);
 
-    document.querySelectorAll('.reveal').forEach(el => {
-      observer.observe(el);
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
     });
-  </script>
+  }, { threshold: 0.16 });
+
+  document.querySelectorAll('.reveal').forEach(el => {
+    observer.observe(el);
+  });
+</script>
 </body>
 </html>
